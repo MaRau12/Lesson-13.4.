@@ -2,24 +2,29 @@ const getState = ({ getStore, getActions, setStore }) => {
 	return {
 		store: {
 			message: null,
-			demo: [
-				{
-					title: "FIRST",
-					background: "white",
-					initial: "white"
-				},
-				{
-					title: "SECOND",
-					background: "white",
-					initial: "white"
-				}
-			]
+			customers: [{id:1, email:"jaja@email.com"}],
+			products: [],
+			categories: []
 		},
 		actions: {
-			// Use getActions to call a function within a fuction
-			exampleFunction: () => {
-				getActions().changeColor(0, "green");
+			addNewCustomer: (email) => {
+				const customers = getStore().customers;
+				let newId = 0;
+				for(let x = 0; x < customers.length; x++) {
+					if (customers[x].id > newId) {
+						newId = customers[x].id;
+					}
+				}
+				let newCustomer = { id: newId + 1, email: email }
+				setStore({ customers: [...customers, newCustomer] })
 			},
+
+			getAllCustomers: async () => {
+				const response = await fetch(process.env.BACKEND_URL + "/api/customer");
+				const data = await response.json();
+				setStore({ customers: data.customers })
+				return data;
+			  },
 
 			getMessage: async () => {
 				try{
@@ -30,7 +35,7 @@ const getState = ({ getStore, getActions, setStore }) => {
 					// don't forget to return something, that is how the async resolves
 					return data;
 				}catch(error){
-					console.log("Error loading message from backend", error)
+					console.log("Error loading data", error)
 				}
 			},
 			changeColor: (index, color) => {

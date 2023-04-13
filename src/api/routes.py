@@ -2,7 +2,7 @@
 This module takes care of starting the API Server, Loading the DB and Adding the endpoints
 """
 from flask import Flask, request, jsonify, url_for, Blueprint
-from api.models import db, User
+from api.models import db, Customer
 from api.utils import generate_sitemap, APIException
 
 api = Blueprint('api', __name__)
@@ -16,3 +16,9 @@ def handle_hello():
     }
 
     return jsonify(response_body), 200
+
+@api.route('/customer', methods=['GET'])
+def handle_get_all_customers():
+    customers = Customer.query.all()    
+
+    return jsonify({"customers":[customer.serialize()for customer in customers]}), 200   
